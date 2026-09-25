@@ -32,6 +32,15 @@ export class PostgresSeatMapRepository implements SeatMapRepositoryPort {
     return SeatMap.rehydrate(flightId, result.rows.map((row) => this.toDomain(row)));
   }
 
+  async findByHoldId(holdId: string): Promise<{ flightId: string; seatNumber: string } | null> {
+    const result = await this.database.query<{ flight_id: string; seat_number: string }>(
+      'SELECT flight_id, seat_number FROM seat_inventory.seats WHERE hold_id = $1',
+      [holdId],
+    );
+    const seat = result.rows[0];
+    return seat ? { flightId: seat.flight_id, seatNumber: seat.seat_number } : null;
+  }
+
   async findAll(): Promise<SeatMap[]> {
     const result = await this.database.query<{ flight_id: string }>(
       'SELECT DISTINCT flight_id FROM seat_inventory.seats ORDER BY flight_id',

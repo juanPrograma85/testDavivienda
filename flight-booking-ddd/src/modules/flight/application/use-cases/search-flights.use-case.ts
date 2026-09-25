@@ -26,7 +26,6 @@ export interface SearchFlightsResponse {
   pageSize: number;
 }
 
-/** Historia 1: búsqueda y filtro de vuelos. */
 @Injectable()
 export class SearchFlightsUseCase {
   constructor(
@@ -44,8 +43,7 @@ export class SearchFlightsUseCase {
         ? new Date(`${query.departureDate}T00:00:00.000Z`)
         : undefined,
       statuses: query.statuses,
-      maxFareInCents:
-        query.maxFare !== undefined ? Math.round(query.maxFare * 100) : undefined,
+      maxFare: query.maxFare,
       sortBy: query.sortBy ?? 'departure',
       limit: query.pageSize,
       offset: (query.page - 1) * query.pageSize,

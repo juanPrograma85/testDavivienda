@@ -3,7 +3,7 @@
 ## Requisitos
 
 - Docker Desktop iniciado.
-- Puertos `3000` y `5433` disponibles.
+- Puertos `8080`, `3000` y `5433` disponibles.
 
 PostgreSQL se publica en `localhost:5433` para no chocar con una instalacion
 local que use `5432`. Dentro de la red de Compose, el backend se conecta a
@@ -40,6 +40,7 @@ Compose realiza este orden:
   `900_seed_development_data.sql` crea los vuelos y asientos de demostracion.
 4. Espera a que `pg_isready` confirme que PostgreSQL esta disponible.
 5. Inicia NestJS con `DATABASE_URL` apuntando a `postgres:5432`.
+6. Construye Angular y lo sirve con Nginx, que reenvia `/api/v1/` al backend.
 
 ## 3. Verificar servicios
 
@@ -50,6 +51,7 @@ docker compose --env-file .env.docker logs -f backend
 
 Abre:
 
+- Frontend: `http://localhost:8080`
 - Swagger: `http://localhost:3000/docs`
 - OpenAPI JSON: `http://localhost:3000/docs/openapi.json`
 - API: `http://localhost:3000/api/v1`
@@ -162,6 +164,9 @@ docker compose --env-file .env.docker config
 - Si `5433` esta ocupado, cambia `POSTGRES_PORT` en `.env.docker`.
 - Si `3000` esta ocupado, cambia `BACKEND_PORT`; dentro del contenedor sigue
   siendo `3000`.
+- Si `8080` esta ocupado, cambia `FRONTEND_PORT`; Nginx escucha en `80` dentro
+  del contenedor. El frontend usa rutas relativas y no requiere cambiar la URL
+  del API al acceder desde otra maquina.
 - Si cambias usuario, clave o nombre de una base ya inicializada, elimina el
   volumen con `down -v` o conserva los valores originales.
 

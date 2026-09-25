@@ -4,7 +4,6 @@ import { ExpireSeatHoldsUseCase } from '../../application/use-cases/expire-seat-
 
 const SWEEP_INTERVAL_MS = 10_000;
 
-/** Driving adapter: turns wall-clock ticks into the hold-expiration use case. */
 @Injectable()
 export class SeatHoldExpirationScheduler {
   private readonly logger = new Logger(SeatHoldExpirationScheduler.name);

@@ -2,7 +2,6 @@ import { InvalidArgumentError } from '@shared/domain/errors/domain-error';
 
 const SEAT_PATTERN = /^(\d{1,2})([A-K])$/;
 
-/** Seat label such as 12A. Row + column letter. */
 export class SeatNumber {
   private constructor(
     readonly value: string,

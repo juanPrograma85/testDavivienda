@@ -106,7 +106,6 @@ export class Flight extends AggregateRoot<UniqueId> {
     return FlightStatusPolicy.isBookable(this._status);
   }
 
-  /** Guard used by the reservation flow through the flight availability port. */
   assertBookable(): void {
     if (!this.isBookable()) {
       throw new BusinessRuleViolationError(

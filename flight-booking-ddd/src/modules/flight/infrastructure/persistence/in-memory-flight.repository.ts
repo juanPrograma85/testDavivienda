@@ -28,7 +28,7 @@ export class InMemoryFlightRepository implements FlightRepositoryPort {
 
     matches.sort((a, b) =>
       criteria.sortBy === 'price'
-        ? a.baseFare.amountInCents - b.baseFare.amountInCents
+        ? a.baseFare.amount - b.baseFare.amount
         : a.departureAt.getTime() - b.departureAt.getTime(),
     );
 
@@ -57,8 +57,8 @@ export class InMemoryFlightRepository implements FlightRepositoryPort {
       return false;
     }
     if (
-      criteria.maxFareInCents !== undefined &&
-      flight.baseFare.amountInCents > criteria.maxFareInCents
+      criteria.maxFare !== undefined &&
+      flight.baseFare.amount > criteria.maxFare
     ) {
       return false;
     }

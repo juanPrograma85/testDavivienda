@@ -13,6 +13,7 @@ import { ReleaseSeatUseCase } from './application/use-cases/release-seat.use-cas
 import { OccupySeatUseCase } from './application/use-cases/occupy-seat.use-case';
 import { ExpireSeatHoldsUseCase } from './application/use-cases/expire-seat-holds.use-case';
 import { GetFlightOccupancyUseCase } from './application/use-cases/get-flight-occupancy.use-case';
+import { PaymentSettledSubscriber } from './application/event-handlers/payment-settled.subscriber';
 import { SeatController } from './presentation/http/seat.controller';
 import { SeatEventsController } from './presentation/http/seat-events.controller';
 import { DashboardController } from './presentation/http/dashboard.controller';
@@ -31,6 +32,7 @@ import { DashboardController } from './presentation/http/dashboard.controller';
     OccupySeatUseCase,
     ExpireSeatHoldsUseCase,
     GetFlightOccupancyUseCase,
+    PaymentSettledSubscriber,
     SeatHoldExpirationScheduler,
   ],
   exports: [SeatInventoryService],

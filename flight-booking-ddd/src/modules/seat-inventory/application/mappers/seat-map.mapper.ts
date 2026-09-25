@@ -9,7 +9,6 @@ export interface SeatView {
   column: string;
   cabinClass: CabinClass;
   status: SeatStatus;
-  /** Seconds left before the temporary hold expires, when applicable. */
   holdExpiresInSeconds: number | null;
 }
 

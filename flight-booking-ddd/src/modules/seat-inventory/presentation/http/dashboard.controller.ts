@@ -13,11 +13,6 @@ import { ParseFlightIdPipe } from '@shared/infrastructure/http/parse-flight-id.p
 import { OccupancyChangedEvent } from '../../domain/events/occupancy-changed.event';
 import { GetFlightOccupancyUseCase } from '../../application/use-cases/get-flight-occupancy.use-case';
 
-/**
- * Historia 4: dashboard de estado del vuelo.
- * GET /dashboard/flights/:flightId  -> snapshot inicial
- * GET /dashboard/stream[?flightId=] -> actualizaciones en vivo
- */
 @ApiTags('Dashboard')
 @Controller('dashboard')
 export class DashboardController {

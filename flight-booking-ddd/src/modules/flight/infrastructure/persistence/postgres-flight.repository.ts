@@ -19,7 +19,7 @@ interface FlightRow {
   destination: string;
   departure_at: Date;
   arrival_at: Date;
-  base_fare_cents: number;
+  base_fare: number;
   currency: string;
   aircraft_model: string;
   status: FlightStatus;
@@ -56,10 +56,10 @@ export class PostgresFlightRepository implements FlightRepositoryPort {
       add('departure_at < ?', end);
     }
     if (criteria.statuses?.length) add('status = ANY(?)', criteria.statuses);
-    if (criteria.maxFareInCents !== undefined) add('base_fare_cents <= ?', criteria.maxFareInCents);
+    if (criteria.maxFare !== undefined) add('base_fare <= ?', criteria.maxFare);
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const sort = criteria.sortBy === 'price' ? 'base_fare_cents ASC' : 'departure_at ASC';
+    const sort = criteria.sortBy === 'price' ? 'base_fare ASC' : 'departure_at ASC';
     const count = await this.database.query<{ count: string }>(
       `SELECT COUNT(*)::text AS count FROM flight.flights ${where}`,
       values,
@@ -73,11 +73,11 @@ export class PostgresFlightRepository implements FlightRepositoryPort {
 
   async save(flight: Flight): Promise<void> {
     await this.database.query(
-      `INSERT INTO flight.flights (id, flight_number, airline, origin, destination, departure_at, arrival_at, base_fare_cents, currency, aircraft_model, status)
+      `INSERT INTO flight.flights (id, flight_number, airline, origin, destination, departure_at, arrival_at, base_fare, currency, aircraft_model, status)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
        ON CONFLICT (id) DO UPDATE SET flight_number = EXCLUDED.flight_number, airline = EXCLUDED.airline,
        origin = EXCLUDED.origin, destination = EXCLUDED.destination, departure_at = EXCLUDED.departure_at,
-       arrival_at = EXCLUDED.arrival_at, base_fare_cents = EXCLUDED.base_fare_cents, currency = EXCLUDED.currency,
+      arrival_at = EXCLUDED.arrival_at, base_fare = EXCLUDED.base_fare, currency = EXCLUDED.currency,
       aircraft_model = EXCLUDED.aircraft_model, status = EXCLUDED.status, updated_at = CURRENT_TIMESTAMP`,
       [
         flight.id.value,
@@ -87,7 +87,7 @@ export class PostgresFlightRepository implements FlightRepositoryPort {
         flight.destination.value,
         flight.departureAt,
         flight.arrivalAt,
-        flight.baseFare.amountInCents,
+        flight.baseFare.amount,
         flight.baseFare.currency,
         flight.aircraftModel,
         flight.status,
@@ -104,7 +104,7 @@ export class PostgresFlightRepository implements FlightRepositoryPort {
       destination: AirportCode.create(row.destination),
       departureAt: new Date(row.departure_at),
       arrivalAt: new Date(row.arrival_at),
-      baseFare: Money.fromCents(Number(row.base_fare_cents), row.currency),
+      baseFare: Money.create(Number(row.base_fare), row.currency),
       aircraftModel: row.aircraft_model,
       status: row.status,
     });

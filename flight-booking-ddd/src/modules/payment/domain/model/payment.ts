@@ -27,7 +27,7 @@ export class Payment extends AggregateRoot<UniqueId> {
     card: CardDetails;
     now: Date;
   }): Payment {
-    if (props.amount.amountInCents <= 0) {
+    if (props.amount.amount <= 0) {
       throw new BusinessRuleViolationError('Payment amount must be positive');
     }
     if (props.card.isExpired(props.now)) {

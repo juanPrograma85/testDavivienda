@@ -1,7 +1,6 @@
 import { Flight } from '../../domain/model/flight';
 import { FlightStatus } from '../../domain/model/flight-status';
 
-/** Read model returned by the application layer. Free of domain objects. */
 export interface FlightView {
   id: string;
   flightNumber: string;

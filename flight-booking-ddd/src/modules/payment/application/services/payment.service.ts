@@ -11,7 +11,6 @@ import {
   ProcessPaymentUseCase,
 } from '../use-cases/process-payment.use-case';
 
-/** Published language of the payment module. */
 @Injectable()
 export class PaymentService {
   constructor(

@@ -18,12 +18,6 @@ const SEAT_EVENTS: ReadonlySet<string> = new Set([
   SeatOccupiedEvent.NAME,
 ]);
 
-/**
- * Historias 2, 3 y 4 (tiempo real): un único canal SSE por vuelo que difunde
- * bloqueos, liberaciones, ocupaciones y el snapshot de ocupación.
- *
- * GET /api/v1/flights/:flightId/events
- */
 @ApiTags('Realtime')
 @Controller('flights/:flightId/events')
 export class SeatEventsController {

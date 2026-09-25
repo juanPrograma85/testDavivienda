@@ -16,10 +16,6 @@ export interface OccupySeatCommand {
   reservationId: string;
 }
 
-/**
- * Historia 3: convierte el bloqueo temporal en ocupación permanente y emite el
- * evento global que deshabilita el asiento para todos los clientes.
- */
 @Injectable()
 export class OccupySeatUseCase {
   constructor(

@@ -13,6 +13,14 @@ export class InMemorySeatMapRepository implements SeatMapRepositoryPort {
     return this.store.get(flightId.value) ?? null;
   }
 
+  async findByHoldId(holdId: string): Promise<{ flightId: string; seatNumber: string } | null> {
+    for (const seatMap of this.store.values()) {
+      const seat = seatMap.allSeats().find((candidate) => candidate.hold?.holdId === holdId);
+      if (seat) return { flightId: seatMap.flightId, seatNumber: seat.number.value };
+    }
+    return null;
+  }
+
   async findAll(): Promise<SeatMap[]> {
     return [...this.store.values()];
   }

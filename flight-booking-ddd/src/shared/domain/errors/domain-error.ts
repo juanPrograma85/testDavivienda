@@ -9,21 +9,18 @@ export abstract class DomainError extends Error {
   }
 }
 
-/** The request is structurally or semantically invalid. */
 export class InvalidArgumentError extends DomainError {
   constructor(message: string) {
     super(message);
   }
 }
 
-/** The aggregate does not exist. */
 export class NotFoundError extends DomainError {
   constructor(message: string) {
     super(message);
   }
 }
 
-/** The operation conflicts with the current state of the aggregate. */
 export class BusinessRuleViolationError extends DomainError {
   constructor(message: string) {
     super(message);

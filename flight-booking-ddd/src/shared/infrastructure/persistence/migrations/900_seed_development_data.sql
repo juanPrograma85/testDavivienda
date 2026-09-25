@@ -3,14 +3,14 @@
 
 INSERT INTO flight.flights (
   id, flight_number, airline, origin, destination, departure_at, arrival_at,
-  base_fare_cents, currency, aircraft_model, status
+  base_fare, currency, aircraft_model, status
 )
 VALUES
-  ('THA001', 'AV245', 'Avianca', 'BOG', 'MEX', CURRENT_DATE + INTERVAL '1 day 12 hours', CURRENT_DATE + INTERVAL '1 day 16 hours 50 minutes', 42050, 'USD', 'Airbus A320', 'SCHEDULED'),
-  ('MAD264', 'AM671', 'Aeromexico', 'BOG', 'MEX', CURRENT_DATE + INTERVAL '1 day 19 hours', CURRENT_DATE + INTERVAL '2 days', 38990, 'USD', 'Boeing 737-800', 'SCHEDULED'),
-  ('AV453', 'LA502', 'LATAM', 'MEX', 'BOG', CURRENT_DATE + INTERVAL '2 days 9 hours', CURRENT_DATE + INTERVAL '2 days 13 hours 45 minutes', 45500, 'USD', 'Airbus A319', 'SCHEDULED'),
-  ('IBE586', 'IB6586', 'Iberia', 'BOG', 'MAD', CURRENT_DATE + INTERVAL '3 days 22 hours', CURRENT_DATE + INTERVAL '4 days 7 hours 45 minutes', 91075, 'EUR', 'Airbus A350', 'SCHEDULED'),
-  ('CMP312', 'CM312', 'Copa', 'PTY', 'BOG', CURRENT_DATE + INTERVAL '1 day 15 hours', CURRENT_DATE + INTERVAL '1 day 16 hours 35 minutes', 18000, 'USD', 'Boeing 737-700', 'SCHEDULED')
+  ('THA001', 'AV245', 'Avianca', 'BOG', 'MEX', CURRENT_DATE + INTERVAL '1 day 12 hours', CURRENT_DATE + INTERVAL '1 day 16 hours 50 minutes', 42050, 'COP', 'Airbus A320', 'SCHEDULED'),
+  ('MAD264', 'AM671', 'Aeromexico', 'BOG', 'MEX', CURRENT_DATE + INTERVAL '1 day 19 hours', CURRENT_DATE + INTERVAL '2 days', 38990, 'COP', 'Boeing 737-800', 'SCHEDULED'),
+  ('AV453', 'LA502', 'LATAM', 'MEX', 'BOG', CURRENT_DATE + INTERVAL '2 days 9 hours', CURRENT_DATE + INTERVAL '2 days 13 hours 45 minutes', 45500, 'COP', 'Airbus A319', 'SCHEDULED'),
+  ('IBE586', 'IB6586', 'Iberia', 'BOG', 'MAD', CURRENT_DATE + INTERVAL '3 days 22 hours', CURRENT_DATE + INTERVAL '4 days 7 hours 45 minutes', 91075, 'COP', 'Airbus A350', 'SCHEDULED'),
+  ('CMP312', 'CM312', 'Copa', 'PTY', 'BOG', CURRENT_DATE + INTERVAL '1 day 15 hours', CURRENT_DATE + INTERVAL '1 day 16 hours 35 minutes', 18000, 'COP', 'Boeing 737-700', 'SCHEDULED')
 ON CONFLICT (id) DO NOTHING;
 
 WITH cabin_layout AS (

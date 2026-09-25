@@ -9,10 +9,7 @@ export interface OccupancySnapshot {
   occupancyRate: number;
 }
 
-/**
- * Historia 4: cada bloqueo, liberación por expiración o reserva confirmada emite
- * este evento para que el dashboard reaccione al instante.
- */
+/** Keeps the dashboard current after holds, expirations, and confirmations. */
 export class OccupancyChangedEvent extends DomainEvent {
   static readonly NAME = 'seat-inventory.occupancy-changed';
 

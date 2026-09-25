@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import {
-  IsIn,
   IsInt,
   IsString,
   IsUUID,
@@ -45,15 +44,14 @@ export class ProcessPaymentDto {
   @IsUUID('4')
   reservationId!: string;
 
-  @ApiProperty({ example: 18000, minimum: 1 })
+  @ApiProperty({
+    example: 42050,
+    minimum: 1,
+    description: 'Valor total en pesos colombianos (COP).',
+  })
   @IsInt()
   @Min(1)
-  amountInCents!: number;
-
-  @ApiProperty({ example: 'USD', enum: ['USD', 'EUR', 'COP', 'MXN'] })
-  @IsString()
-  @IsIn(['USD', 'EUR', 'COP', 'MXN'])
-  currency!: string;
+  amount!: number;
 
   @ApiProperty({ type: PaymentCardDto })
   @ValidateNested()

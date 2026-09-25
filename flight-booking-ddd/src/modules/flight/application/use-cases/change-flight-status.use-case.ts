@@ -15,10 +15,6 @@ export interface ChangeFlightStatusCommand {
   reason?: string;
 }
 
-/**
- * Historia 1 (regla de tiempo real): el cambio de estado publica un evento que
- * los clientes suscritos por SSE reciben sin recargar la página.
- */
 @Injectable()
 export class ChangeFlightStatusUseCase {
   constructor(

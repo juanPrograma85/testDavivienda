@@ -24,7 +24,7 @@ export abstract class AggregateRoot<TId> extends Entity<TId> {
     this._events.push(event);
   }
 
-  /** Drains recorded events so the application layer can publish them after commit. */
+  /** Drains recorded events so the application layer controls publication timing. */
   pullDomainEvents(): DomainEvent[] {
     const events = this._events;
     this._events = [];

@@ -9,7 +9,6 @@ export interface FlightOccupancyView extends OccupancySnapshot {
   generatedAt: string;
 }
 
-/** Historia 4: métricas de ocupación para el dashboard. */
 @Injectable()
 export class GetFlightOccupancyUseCase {
   constructor(

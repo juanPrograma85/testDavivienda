@@ -170,6 +170,15 @@ payment successful + seat occupation failed
 
 En el Modular Monolith, `ConfirmReservationUseCase` debe coordinar una operacion idempotente y registrar el estado de compensacion o reintento. Si Payment se extrae como microservicio, la evolucion natural es una Saga con compensacion/refund y reintentos, no una transaccion distribuida improvisada.
 
+El procesamiento actual serializa solicitudes por `reservationId` mediante un
+advisory lock transaccional. Si el pago ya existe, se lee con `SELECT ... FOR
+UPDATE`; si aun no existe, el advisory lock protege la primera insercion. El
+estado `PENDING` y su liquidacion `AUTHORIZED` o `DECLINED` se confirman con un
+unico `COMMIT`. Solo despues del commit se publica `PaymentSettled` y se responde
+al `POST /api/v1/payments`. Mientras se use el gateway local esta operacion es
+corta; al integrar un gateway remoto debe cambiarse a `PENDING + outbox` para no
+mantener una transaccion SQL abierta durante I/O de red.
+
 ## 13. Domain Events
 
 Los eventos minimos son:
@@ -370,8 +379,7 @@ Request:
 ```json
 {
   "reservationId": "b2f5c434-e8e4-4f72-8738-4749b27cd68c",
-  "amountInCents": 18000,
-  "currency": "USD",
+  "amount": 42050,
   "card": {
     "pan": "4111111111111111",
     "cvv": "123",

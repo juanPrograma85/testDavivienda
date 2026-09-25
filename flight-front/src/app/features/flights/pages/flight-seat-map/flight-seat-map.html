@@ -1,0 +1,108 @@
+<main class="seat-map-page">
+  <a mat-button routerLink="/flights">Volver a vuelos</a>
+  <header>
+    <p>Vuelo {{ flightId }}</p>
+    <h1>Completa los datos del pasajero</h1>
+  </header>
+
+  <mat-card class="passenger-card">
+    <mat-card-content>
+      <form [formGroup]="passengerForm" (ngSubmit)="continueToSeatSelection()">
+        <div class="passenger-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre completo</mat-label>
+            <input matInput formControlName="fullName" autocomplete="name">
+            @if (passengerForm.controls.fullName.touched && passengerForm.controls.fullName.invalid) {
+              <mat-error>Ingresa el nombre completo del pasajero.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Documento de identidad</mat-label>
+            <input matInput formControlName="document" autocomplete="off">
+            @if (passengerForm.controls.document.touched && passengerForm.controls.document.invalid) {
+              <mat-error>Ingresa un documento válido.</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <button mat-raised-button color="primary" type="submit">Continuar a puestos</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  @if (showSeatMap()) {
+    <section class="seat-selection" aria-live="polite">
+      <header>
+        <p>{{ passengerForm.controls.fullName.value }} · {{ passengerForm.controls.document.value }}</p>
+        <h2>Selecciona tu puesto</h2>
+      </header>
+
+      <mat-card>
+        <mat-card-content>
+          <div class="seat-legend" aria-label="Leyenda de puestos">
+            <span><i class="legend-swatch available"></i>Disponible</span>
+            <span><i class="legend-swatch occupied"></i>Ocupado</span>
+            <span><i class="legend-swatch selected"></i>Seleccionado</span>
+          </div>
+
+          <div class="cabin-map" aria-label="Mapa de puestos disponibles">
+            <div class="cabin-columns" aria-hidden="true">
+              <span>A</span><span>B</span><span>C</span><span></span><span>D</span><span>E</span><span>F</span>
+            </div>
+
+            @for (seatRow of seatRows(); track seatRow.row) {
+              <div class="cabin-row">
+                @for (seat of seatRow.leftSeats; track $index) {
+                  @if (seat; as currentSeat) {
+                    <button
+                      type="button"
+                      class="seat"
+                      [class.selected]="selectedSeat() === currentSeat.seatId"
+                      [disabled]="currentSeat.status !== 'AVAILABLE' || isHoldingSeat()"
+                      [attr.aria-pressed]="selectedSeat() === currentSeat.seatId"
+                      [attr.aria-label]="'Puesto ' + currentSeat.seatId + ', ' + currentSeat.status"
+                      (click)="selectSeat(currentSeat.seatId)">
+                      {{ currentSeat.seatId }}
+                    </button>
+                  } @else {
+                    <span class="empty-seat" aria-hidden="true"></span>
+                  }
+                }
+
+                <span class="row-number">{{ seatRow.row }}</span>
+
+                @for (seat of seatRow.rightSeats; track $index) {
+                  @if (seat; as currentSeat) {
+                    <button
+                      type="button"
+                      class="seat"
+                      [class.selected]="selectedSeat() === currentSeat.seatId"
+                      [disabled]="currentSeat.status !== 'AVAILABLE' || isHoldingSeat()"
+                      [attr.aria-pressed]="selectedSeat() === currentSeat.seatId"
+                      [attr.aria-label]="'Puesto ' + currentSeat.seatId + ', ' + currentSeat.status"
+                      (click)="selectSeat(currentSeat.seatId)">
+                      {{ currentSeat.seatId }}
+                    </button>
+                  } @else {
+                    <span class="empty-seat" aria-hidden="true"></span>
+                  }
+                }
+              </div>
+            }
+          </div>
+
+          @if (isHoldingSeat()) {
+            <p class="reservation-confirmation" role="status">
+              Reservando el puesto {{ selectedSeat() }} y preparando el pago...
+            </p>
+          }
+
+          @if (holdError(); as error) {
+            <p class="reservation-error" role="alert">{{ error }}</p>
+          }
+        </mat-card-content>
+      </mat-card>
+    </section>
+  }
+</main>

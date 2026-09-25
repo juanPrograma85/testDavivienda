@@ -8,7 +8,6 @@ export interface CabinSection {
   columns: string[];
 }
 
-/** Describes the physical seat layout of an aircraft. */
 export class CabinLayout {
   private constructor(readonly sections: readonly CabinSection[]) {}
 

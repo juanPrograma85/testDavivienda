@@ -73,7 +73,6 @@ export class SeatMap extends AggregateRoot<UniqueId> {
     return seat;
   }
 
-  /** Historia 2: bloqueo temporal del asiento seleccionado. */
   holdSeat(
     seatNumber: SeatNumber,
     userName: string,
@@ -97,7 +96,7 @@ export class SeatMap extends AggregateRoot<UniqueId> {
     return hold;
   }
 
-  /** Only the holder of the lock may release it before expiration. */
+  /** User releases require the matching document; trusted internal releases may omit it. */
   releaseSeat(
     seatNumber: SeatNumber,
     userDocument: string | undefined,
@@ -118,7 +117,6 @@ export class SeatMap extends AggregateRoot<UniqueId> {
     this.recordOccupancy(now, SeatReleasedEvent.NAME);
   }
 
-  /** Historia 3: el asiento pasa a ocupado de forma permanente. */
   occupySeat(
     seatNumber: SeatNumber,
     holdId: string,
@@ -133,7 +131,6 @@ export class SeatMap extends AggregateRoot<UniqueId> {
     this.recordOccupancy(now, SeatOccupiedEvent.NAME);
   }
 
-  /** Sweeps expired locks and records one release event per freed seat. */
   expireHolds(now: Date): number {
     let expired = 0;
     for (const seat of this.seats.values()) {

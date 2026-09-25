@@ -1,0 +1,144 @@
+<main class="flight-search-page">
+  <header class="page-header">
+    <p class="eyebrow">Planifica tu viaje</p>
+    <h1>Encuentra tu próximo vuelo</h1>
+  </header>
+
+  <div class="search-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Buscar vuelos</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="searchForm" (ngSubmit)="searchFlights()">
+
+        <div class="search-grid">
+
+          <mat-form-field appearance="outline">
+            <mat-label>Origen</mat-label>
+            <input
+              matInput
+              formControlName="origin"
+              placeholder="Bogotá">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Destino</mat-label>
+            <input
+              matInput
+              formControlName="destination"
+              placeholder="Medellín">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha</mat-label>
+            <input
+              matInput
+              [matDatepicker]="picker"
+              formControlName="departureDate">
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker">
+            </mat-datepicker-toggle>
+            <mat-datepicker #picker />
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit">
+            Buscar
+          </button>
+
+        </div>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+  </div>
+
+  <section class="results-container" aria-live="polite">
+  @for (flight of flights(); track flight.id) {
+    <mat-card class="flight-card">
+
+    <mat-card-content>
+
+      <div class="flight-row">
+
+        <div>
+          <h3>{{ flight.flightNumber }}</h3>
+          <p>
+            {{ flight.airline }} · {{ flight.origin }}
+            <span aria-hidden="true">→</span>
+            {{ flight.destination }}
+          </p>
+        </div>
+
+        <div>
+          <strong>Salida</strong>
+          <p>{{ flight.departureAt | date: 'HH:mm' }}</p>
+        </div>
+
+       <div>
+          <strong>Llegada</strong>
+          <p>{{ flight.arrivalAt | date: 'HH:mm' }}</p>
+        </div>
+
+       <div>
+          <strong>Precio</strong>
+          <p>{{ flight.fare.amount | currency: flight.fare.currency }}</p>
+        </div>
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="viewDashboard(flight.id)">
+          Ocupación
+        </button>
+        <button
+          mat-raised-button
+          color="accent"
+          [routerLink]="['/flights', flight.id, 'seats']"
+          [state]="{ fare: flight.fare }">Reservar
+        </button>
+
+      </div>
+
+    </mat-card-content>
+
+    </mat-card>
+  }
+
+  </section>
+
+  @if (isLoadingDashboard()) {
+    <p class="dashboard-loading" aria-live="polite">Cargando ocupación del vuelo...</p>
+  }
+
+  @if (dashboard(); as currentDashboard) {
+    <section class="dashboard-section" aria-live="polite">
+      <header class="dashboard-header">
+        <div>
+          <p class="eyebrow">Estado del vuelo {{ currentDashboard.flightId }}</p>
+          <h2>Ocupación de cabina</h2>
+        </div>
+        <strong>{{ currentDashboard.occupancyRate * 100 | number: '1.0-1' }}% ocupado</strong>
+      </header>
+
+      <mat-card class="dashboard-card">
+        <mat-card-content>
+          <div class="occupancy-track" aria-label="Porcentaje de ocupación">
+            <span [style.width.%]="currentDashboard.occupancyRate * 100"></span>
+          </div>
+          <div class="dashboard-metrics">
+            <div><strong>{{ currentDashboard.totalSeats }}</strong><span>Total de puestos</span></div>
+            <div class="available"><strong>{{ currentDashboard.availableSeats }}</strong><span>Disponibles</span></div>
+            <div class="held"><strong>{{ currentDashboard.heldSeats }}</strong><span>En retención</span></div>
+            <div class="occupied"><strong>{{ currentDashboard.occupiedSeats }}</strong><span>Ocupados</span></div>
+            <div class="blocked"><strong>{{ currentDashboard.blockedSeats }}</strong><span>Bloqueados</span></div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  }
+</main>

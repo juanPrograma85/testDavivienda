@@ -1,0 +1,62 @@
+<main class="reservation-page">
+  @if (hasReservation) {
+    <header>
+      <p>Reserva temporal confirmada</p>
+      <h1>Continúa con el pago</h1>
+    </header>
+
+    <mat-card>
+      <mat-card-content>
+        <dl class="reservation-summary">
+          <div><dt>Pasajero</dt><dd>{{ reservation.userName }}</dd></div>
+          <div><dt>Documento</dt><dd>{{ reservation.userDocument }}</dd></div>
+          <div><dt>Vuelo</dt><dd>{{ reservation.flightId }}</dd></div>
+          <div><dt>Puesto</dt><dd>{{ reservation.seatId }}</dd></div>
+        </dl>
+
+        @if (paymentCompleted()) {
+          <section class="payment-success" role="status">
+            <p class="payment-confirmation">Pago procesado correctamente.</p>
+            <a mat-raised-button color="primary" routerLink="/flights">Finalizar</a>
+          </section>
+        } @else if (paymentRejected()) {
+          <section class="payment-rejection" role="alert">
+            <h2>Pago rechazado</h2>
+            <p>No fue posible procesar el pago. El puesto permanece en retención hasta que venza o sea liberado.</p>
+            <a mat-raised-button color="primary" routerLink="/flights">Volver a vuelos</a>
+          </section>
+        } @else {
+          <form [formGroup]="paymentForm" (ngSubmit)="processPayment()" class="payment-form">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre del titular</mat-label>
+              <input matInput formControlName="holderName" autocomplete="cc-name">
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Número de tarjeta</mat-label>
+              <input matInput formControlName="pan" inputmode="numeric" autocomplete="cc-number">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Mes de vencimiento</mat-label>
+              <input matInput formControlName="expiryMonth" inputmode="numeric" placeholder="12" autocomplete="cc-exp-month">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Año de vencimiento</mat-label>
+              <input matInput formControlName="expiryYear" inputmode="numeric" placeholder="2030" autocomplete="cc-exp-year">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>CVV</mat-label>
+              <input matInput formControlName="cvv" inputmode="numeric" autocomplete="cc-csc">
+            </mat-form-field>
+            <button mat-raised-button color="primary" type="submit">Pagar reserva</button>
+          </form>
+        }
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <header>
+      <p>No hay una reserva activa</p>
+      <h1>Busca un vuelo para continuar</h1>
+    </header>
+    <a mat-raised-button color="primary" routerLink="/flights">Volver a vuelos</a>
+  }
+</main>

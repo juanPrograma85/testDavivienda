@@ -3,6 +3,7 @@ import { SeatMap } from '../model/seat-map';
 
 export interface SeatMapRepositoryPort {
   findByFlightId(flightId: UniqueId): Promise<SeatMap | null>;
+  findByHoldId(holdId: string): Promise<{ flightId: string; seatNumber: string } | null>;
   findAll(): Promise<SeatMap[]>;
   save(seatMap: SeatMap): Promise<void>;
   /**

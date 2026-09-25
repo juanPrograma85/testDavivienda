@@ -6,7 +6,6 @@ import {
 import { SeatNumber } from './seat-number';
 import { CabinClass, SeatStatus } from './seat-status';
 
-/** Temporary ownership of a seat. Immutable value object. */
 export class SeatHold {
   private constructor(
     readonly holdId: string,
@@ -107,7 +106,6 @@ export class Seat {
     return this._reservationId;
   }
 
-  /** Effective status taking hold expiration into account. */
   effectiveStatus(now: Date): SeatStatus {
     if (this._status === SeatStatus.Held && this._hold?.isExpired(now)) {
       return SeatStatus.Available;
@@ -167,7 +165,6 @@ export class Seat {
     this._hold = undefined;
   }
 
-  /** Returns true when an expired hold was actually cleared. */
   expireHoldIfNeeded(now: Date): boolean {
     if (this._status === SeatStatus.Held && this._hold?.isExpired(now)) {
       this._status = SeatStatus.Available;

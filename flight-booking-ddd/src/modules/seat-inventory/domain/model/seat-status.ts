@@ -11,7 +11,6 @@ export enum CabinClass {
   Business = 'BUSINESS',
 }
 
-/** Multiplier applied to the flight base fare. */
 export const CABIN_FARE_MULTIPLIER: Readonly<Record<CabinClass, number>> = {
   [CabinClass.Economy]: 1,
   [CabinClass.PremiumEconomy]: 1.45,

@@ -32,7 +32,6 @@ export class FlightController {
     private readonly changeFlightStatus: ChangeFlightStatusUseCase,
   ) {}
 
-  /** Historia 1: búsqueda y filtro de vuelos. */
   @ApiOperation({ summary: 'Buscar vuelos por origen, destino y fecha' })
   @ApiQuery({ name: 'origin', required: false, example: 'BOG', description: 'Codigo IATA de origen.' })
   @ApiQuery({ name: 'destination', required: false, example: 'MEX', description: 'Codigo IATA de destino.' })
@@ -56,7 +55,6 @@ export class FlightController {
     return this.getFlight.execute(flightId);
   }
 
-  /** Administrative operation: emits the realtime status update. */
   @UseGuards(AdminApiKeyGuard)
   @ApiOperation({ summary: 'Cambiar el estado operativo de un vuelo' })
   @ApiParam({ name: 'flightId', schema: { type: 'string', pattern: '^[A-Z]{2,3}\\d{3}$' }, example: 'THA001' })

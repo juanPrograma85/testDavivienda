@@ -3,8 +3,6 @@ import { InvalidArgumentError } from '@shared/domain/errors/domain-error';
 const DIGITS_ONLY = /^\d+$/;
 
 /**
- * Card data value object.
- *
  * SECURITY: the PAN and the CVV are validated and then discarded. Only the
  * brand, the last four digits and the expiry are kept in memory, so no
  * cardholder data can leak through logs, events or persistence (PCI-DSS 3.4).

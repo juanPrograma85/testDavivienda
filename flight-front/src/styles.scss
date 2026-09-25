@@ -1,0 +1,20 @@
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+
+:root {
+	color: #17202a;
+	font-family: Manrope, "Segoe UI", sans-serif;
+	font-synthesis: none;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	min-width: 320px;
+	min-height: 100dvh;
+	margin: 0;
+	background:
+		linear-gradient(120deg, rgb(226 242 249 / 75%), transparent 42%),
+		#f7f9fb;
+}

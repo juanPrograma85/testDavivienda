@@ -6,10 +6,7 @@ import {
   SeatMapRepositoryPort,
 } from '../../domain/ports/seat-map.repository';
 
-/**
- * Historia 4: la liberación por tiempo expirado debe reflejarse al instante, así
- * que el barrido publica eventos aunque nadie esté consultando el mapa.
- */
+/** Publishes expired holds even when no client is currently reading the map. */
 @Injectable()
 export class ExpireSeatHoldsUseCase {
   private readonly logger = new Logger(ExpireSeatHoldsUseCase.name);

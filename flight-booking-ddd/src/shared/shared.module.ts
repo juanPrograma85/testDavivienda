@@ -6,6 +6,8 @@ import { RealtimeHub } from './infrastructure/realtime/realtime-hub';
 import { SystemClock } from './infrastructure/time/system-clock';
 import { AdminApiKeyGuard } from './infrastructure/security/admin-api-key.guard';
 import { PostgresDatabase } from './infrastructure/persistence/postgres-database';
+import { APP_FILTER } from '@nestjs/core';
+import { DomainExceptionFilter } from './infrastructure/http/domain-exception.filter';
 
 /**
  * Shared kernel. Exposes only stable abstractions; modules never import each
@@ -20,6 +22,7 @@ import { PostgresDatabase } from './infrastructure/persistence/postgres-database
     RealtimeHub,
     AdminApiKeyGuard,
     PostgresDatabase,
+    { provide: APP_FILTER, useClass: DomainExceptionFilter },
   ],
   exports: [InMemoryEventBus, EVENT_BUS, CLOCK, RealtimeHub, AdminApiKeyGuard, PostgresDatabase],
 })

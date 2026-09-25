@@ -4,13 +4,6 @@ import { RealtimeHub } from '@shared/infrastructure/realtime/realtime-hub';
 import { FlightStatusChangedEvent } from '../../domain/events/flight-status-changed.event';
 import { ApiOperation, ApiProduces, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-/**
- * Historia 1 (tiempo real): el listado de resultados se actualiza vía SSE cuando
- * un vuelo cambia de estado, sin recargar la página.
- *
- * GET /api/v1/flights/events
- * GET /api/v1/flights/events?flightId=THA001
- */
 @ApiTags('Realtime')
 @Controller('flights')
 export class FlightEventsController {

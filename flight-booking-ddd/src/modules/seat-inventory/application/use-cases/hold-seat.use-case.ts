@@ -25,10 +25,6 @@ export interface HoldSeatResult {
   expiresInSeconds: number;
 }
 
-/**
- * Historia 2: bloquea el asiento temporalmente y emite el evento en tiempo real
- * que notifica a los demás usuarios activos.
- */
 @Injectable()
 export class HoldSeatUseCase {
   constructor(

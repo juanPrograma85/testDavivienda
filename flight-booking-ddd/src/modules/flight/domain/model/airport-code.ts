@@ -2,7 +2,6 @@ import { InvalidArgumentError } from '@shared/domain/errors/domain-error';
 
 const IATA_PATTERN = /^[A-Z]{3}$/;
 
-/** IATA airport code, e.g. BOG, MEX, MAD. */
 export class AirportCode {
   private constructor(readonly value: string) {}
 

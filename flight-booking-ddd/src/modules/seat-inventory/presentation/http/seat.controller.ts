@@ -30,7 +30,6 @@ export class SeatController {
     private readonly releaseSeat: ReleaseSeatUseCase,
   ) {}
 
-  /** Historia 2: mapa interactivo de la aeronave. */
   @ApiOperation({ summary: 'Obtener el snapshot actual del mapa de asientos' })
   @ApiParam({ name: 'flightId', schema: { type: 'string', pattern: '^[A-Z]{2,3}\\d{3}$' }, example: 'THA001' })
   @ApiResponse({ status: 200, description: 'Mapa y ocupacion actuales.' })
@@ -39,10 +38,7 @@ export class SeatController {
     return this.getSeatMap.execute(flightId);
   }
 
-  /**
-   * Historia 2: bloqueo temporal. Rate limited on its own because it is the
-   * endpoint an attacker would abuse to exhaust the cabin.
-   */
+  /** Rate limited independently because abusing holds can exhaust the cabin. */
   @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @ApiOperation({ summary: 'Bloquear temporalmente un asiento disponible' })
   @ApiParam({ name: 'seatNumber', example: '12A' })

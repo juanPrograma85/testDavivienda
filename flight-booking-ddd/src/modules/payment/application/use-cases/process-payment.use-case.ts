@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Money } from '@shared/domain/model/money';
 import { CLOCK, ClockPort } from '@shared/application/ports/clock.port';
 import { EVENT_BUS, EventBusPort } from '@shared/application/ports/event-bus.port';
+import { DomainEvent } from '@shared/domain/events/domain-event';
 import { CardDetails } from '../../domain/model/card-details';
 import { Payment } from '../../domain/model/payment';
 import { PaymentStatus } from '../../domain/model/payment-status';
@@ -16,8 +17,7 @@ import {
 
 export interface ProcessPaymentCommand {
   reservationId: string;
-  amountInCents: number;
-  currency: string;
+  amount: number;
   card: {
     pan: string;
     cvv: string;
@@ -37,7 +37,6 @@ export interface PaymentResult {
   amount: { amount: number; currency: string };
 }
 
-/** Historia 3: procesamiento del pago (datos ficticios) de la reserva. */
 @Injectable()
 export class ProcessPaymentUseCase {
   constructor(
@@ -50,40 +49,48 @@ export class ProcessPaymentUseCase {
   ) {}
 
   async execute(command: ProcessPaymentCommand): Promise<PaymentResult> {
-    const existing = await this.payments.findByReservationId(
+    const result = await this.payments.withReservationLock(
       command.reservationId,
+      async (): Promise<{ payment: Payment; events: DomainEvent[] }> => {
+        const existing = await this.payments.findByReservationId(
+          command.reservationId,
+        );
+        if (existing) {
+          // The reservation lock makes concurrent retries return one payment.
+          return { payment: existing, events: [] };
+        }
+
+        const payment = Payment.initiate({
+          reservationId: command.reservationId,
+          amount: Money.create(command.amount),
+          card: CardDetails.create(command.card),
+          now: this.clock.now(),
+        });
+
+        await this.payments.save(payment);
+
+        const outcome = await this.gateway.authorize({
+          paymentId: payment.id.value,
+          reservationId: payment.reservationId,
+          amount: payment.amount,
+          card: payment.card,
+        });
+
+        if (outcome.approved) {
+          payment.authorize(outcome.authorizationCode);
+        } else {
+          payment.decline(outcome.declineReason);
+        }
+
+        await this.payments.save(payment);
+        return { payment, events: payment.pullDomainEvents() };
+      },
     );
-    if (existing) {
-      // Idempotency guard: a retried request never charges twice.
-      return this.toResult(existing);
-    }
 
-    const payment = Payment.initiate({
-      reservationId: command.reservationId,
-      amount: Money.fromCents(command.amountInCents, command.currency),
-      card: CardDetails.create(command.card),
-      now: this.clock.now(),
-    });
+    // withReservationLock has committed before any observer sees the event.
+    await this.eventBus.publish(result.events);
 
-    await this.payments.save(payment);
-
-    const outcome = await this.gateway.authorize({
-      paymentId: payment.id.value,
-      reservationId: payment.reservationId,
-      amount: payment.amount,
-      card: payment.card,
-    });
-
-    if (outcome.approved) {
-      payment.authorize(outcome.authorizationCode);
-    } else {
-      payment.decline(outcome.declineReason);
-    }
-
-    await this.payments.save(payment);
-    await this.eventBus.publish(payment.pullDomainEvents());
-
-    return this.toResult(payment);
+    return this.toResult(result.payment);
   }
 
   private toResult(payment: Payment): PaymentResult {

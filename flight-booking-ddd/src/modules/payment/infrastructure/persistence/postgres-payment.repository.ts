@@ -10,7 +10,7 @@ import { PaymentRepositoryPort } from '../../domain/ports/payment.repository';
 interface PaymentRow {
   id: string;
   reservation_id: string;
-  amount_in_cents: number;
+  amount: number;
   currency: string;
   card_brand: string;
   card_last4: string;
@@ -37,7 +37,7 @@ export class PostgresPaymentRepository implements PaymentRepositoryPort {
 
   async findByReservationId(reservationId: string): Promise<Payment | null> {
     const result = await this.database.query<PaymentRow>(
-      'SELECT * FROM payment.payments WHERE reservation_id = $1',
+      'SELECT * FROM payment.payments WHERE reservation_id = $1 FOR UPDATE',
       [reservationId],
     );
     return result.rows[0] ? this.toDomain(result.rows[0]) : null;
@@ -45,7 +45,7 @@ export class PostgresPaymentRepository implements PaymentRepositoryPort {
 
   async save(payment: Payment): Promise<void> {
     await this.database.query(
-      `INSERT INTO payment.payments (id, reservation_id, amount_in_cents, currency, card_brand, card_last4,
+      `INSERT INTO payment.payments (id, reservation_id, amount, currency, card_brand, card_last4,
        card_expiry_month, card_expiry_year, card_holder_name, created_at, status, authorization_code, failure_reason)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
        ON CONFLICT (id) DO UPDATE SET status = EXCLUDED.status,
@@ -54,7 +54,7 @@ export class PostgresPaymentRepository implements PaymentRepositoryPort {
       [
         payment.id.value,
         payment.reservationId,
-        payment.amount.amountInCents,
+        payment.amount.amount,
         payment.amount.currency,
         payment.card.brand,
         payment.card.last4,
@@ -69,11 +69,26 @@ export class PostgresPaymentRepository implements PaymentRepositoryPort {
     );
   }
 
+  async withReservationLock<T>(
+    reservationId: string,
+    mutation: () => Promise<T>,
+  ): Promise<T> {
+    return this.database.withTransaction(async () => {
+      // The advisory lock also serializes the first insert, when no row exists
+      // yet for SELECT FOR UPDATE to lock.
+      await this.database.query(
+        'SELECT pg_advisory_xact_lock(hashtext($1))',
+        [`payment:${reservationId}`],
+      );
+      return mutation();
+    });
+  }
+
   private toDomain(row: PaymentRow): Payment {
     return Payment.rehydrate({
       id: UniqueId.fromString(row.id),
       reservationId: row.reservation_id,
-      amount: Money.fromCents(Number(row.amount_in_cents), row.currency),
+      amount: Money.create(Number(row.amount), row.currency),
       card: CardDetails.rehydrate({
         brand: row.card_brand,
         last4: row.card_last4,

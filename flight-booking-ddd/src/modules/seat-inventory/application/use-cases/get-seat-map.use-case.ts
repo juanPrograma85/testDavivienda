@@ -9,7 +9,6 @@ import {
 import { SeatMapProvisioner } from '../services/seat-map-provisioner';
 import { SeatMapMapper, SeatMapView } from '../mappers/seat-map.mapper';
 
-/** Historia 2: mapa interactivo de la aeronave. */
 @Injectable()
 export class GetSeatMapUseCase {
   constructor(
