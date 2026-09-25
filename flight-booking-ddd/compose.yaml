@@ -1,0 +1,50 @@
+name: flight-booking
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-flight_booking}
+      POSTGRES_USER: ${POSTGRES_USER:-flight_booking}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flight_booking_local_password}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/shared/infrastructure/persistence/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-flight_booking}:${POSTGRES_PASSWORD:-flight_booking_local_password}@postgres:5432/${POSTGRES_DB:-flight_booking}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:4200}
+      ADMIN_API_KEY: ${ADMIN_API_KEY:-local-development-admin-key-32-chars}
+      RATE_LIMIT_TTL_MS: ${RATE_LIMIT_TTL_MS:-60000}
+      RATE_LIMIT_LIMIT: ${RATE_LIMIT_LIMIT:-120}
+      SEAT_HOLD_TTL_SECONDS: ${SEAT_HOLD_TTL_SECONDS:-420}
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/docs/openapi.json').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
